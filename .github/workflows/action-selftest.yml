@@ -1,0 +1,24 @@
+name: Action self-test
+
+# Exercises the composite action in action.yml end-to-end by running it against
+# this repository (which is configured to be in sync, so the check passes).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  run-action:
+    name: Run env-doctor action on this repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: env-doctor
+        uses: ./
+        with:
+          working-directory: '.'
+          fail-on: 'undocumented'
