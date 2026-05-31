@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest an idea or improvement for env-doctor
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What gap or pain point should this address?
+      placeholder: env-doctor doesn't detect variables referenced via …
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like env-doctor to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches, workarounds, or prior art.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      description: env-doctor reports variable names only — never values.
+      options:
+        - label: This request does not require env-doctor to read or output env *values*.
+          required: true

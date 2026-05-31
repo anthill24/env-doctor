@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+
+# This repo intentionally ships no real environment files.
+.env
+.env.*
+!.env.example
+# …except the test fixtures, which use clearly-synthetic canary values and are
+# required by the test suite (see test/no-secret-leak.test.ts).
+!test/fixtures/**/.env
+!test/fixtures/**/.env.*

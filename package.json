@@ -1,0 +1,70 @@
+{
+  "name": "env-doctor",
+  "version": "0.1.0",
+  "description": "Keep your .env.example honest: cross-check it against the env vars your code actually uses and your local .env. Reports variable names only — never values.",
+  "keywords": [
+    "dotenv",
+    "environment-variables",
+    "env",
+    "configuration",
+    "developer-experience",
+    "cli",
+    "github-actions",
+    "developer-tools"
+  ],
+  "license": "MIT",
+  "author": "anthill24",
+  "homepage": "https://github.com/anthill24/env-doctor#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anthill24/env-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anthill24/env-doctor/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "env-doctor": "dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "tinyglobby": "^0.2.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.8"
+  }
+}
