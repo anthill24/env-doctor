@@ -1,0 +1,55 @@
+name: 'env-doctor'
+description: 'Cross-check .env.example against the env vars your code uses. Reports variable names only — never values.'
+author: 'anthill24'
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  working-directory:
+    description: 'Directory to run env-doctor in.'
+    required: false
+    default: '.'
+  config:
+    description: 'Path to .envdoctorrc.json, relative to working-directory.'
+    required: false
+    default: ''
+  fail-on:
+    description: 'Comma-separated buckets that fail the build: undocumented, unused, missing-local. Use "none" to never fail.'
+    required: false
+    default: 'undocumented'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install env-doctor
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci --no-audit --no-fund
+
+    - name: Build env-doctor
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm run build
+
+    - name: Run env-doctor check
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        ENVDOCTOR_CONFIG: ${{ inputs.config }}
+        ENVDOCTOR_FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        set -euo pipefail
+        args=(check --fail-on "${ENVDOCTOR_FAIL_ON}")
+        if [ -n "${ENVDOCTOR_CONFIG}" ]; then
+          args+=(--config "${ENVDOCTOR_CONFIG}")
+        fi
+        # The CLI appends a names-only summary to $GITHUB_STEP_SUMMARY itself
+        # and exits non-zero when a failing bucket is non-empty.
+        node "${{ github.action_path }}/dist/cli.js" "${args[@]}"

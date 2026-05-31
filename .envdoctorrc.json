@@ -1,0 +1,4 @@
+{
+  "source": ["src/**/*.ts"],
+  "ignore": ["GITHUB_STEP_SUMMARY", "CI", "NODE_ENV"]
+}

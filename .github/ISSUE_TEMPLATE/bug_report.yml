@@ -1,0 +1,59 @@
+name: Bug report
+description: Report incorrect behavior in env-doctor
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug! **Please never paste real secret values.**
+        If your report involves an actual env *value* appearing in env-doctor's
+        output, stop and report it privately — see
+        [SECURITY.md](../blob/main/SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did env-doctor do, and what did you expect instead?
+      placeholder: env-doctor reported X as undocumented, but it is documented in .env.example…
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: |
+        Steps, the command you ran, and a minimal example. Use **synthetic**
+        variable names and values only (e.g. `FOO=placeholder`).
+      placeholder: |
+        1. Source contains `process.env.FOO`
+        2. Run `env-doctor check`
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Config
+      description: Your `.envdoctorrc.json`, if any (redact as needed).
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: env-doctor version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: '20.x'
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: This report contains no real secret values.
+          required: true
