@@ -40,6 +40,7 @@ export async function runCheck(options: CheckOptions): Promise<CheckResult> {
     source: config.source,
     exclude: config.exclude,
     patterns,
+    detectDestructuring: config.detectDestructuring,
   });
 
   const example = await readEnvKeys(options.cwd, config.exampleFile);

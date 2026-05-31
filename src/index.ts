@@ -7,7 +7,13 @@
  */
 export { parseEnvKeys } from './parser.js';
 export { DEFAULT_PATTERNS } from './patterns.js';
-export { compilePatterns, scanContent, scanSources, type ScanResult } from './scanner.js';
+export {
+  compilePatterns,
+  scanContent,
+  scanDestructuring,
+  scanSources,
+  type ScanResult,
+} from './scanner.js';
 export { analyze, bucketHasFailure, type Analysis } from './analyze.js';
 export { readEnvKeys, type EnvFileKeys } from './io.js';
 export {

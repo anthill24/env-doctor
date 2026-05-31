@@ -173,6 +173,7 @@ Drop a `.envdoctorrc.json` in your project root (or point at one with
 | `ignore` | `[]` | Variable **names** to ignore in every bucket. |
 | `patterns` | `[]` | Extra reference regexes (one capture group = the name). |
 | `useDefaultPatterns` | `true` | Include the built-in JS/TS patterns. |
+| `detectDestructuring` | `true` | Detect `const { NAME } = process.env`. |
 | `exampleFile` | `.env.example` | The documented contract. |
 | `localFile` | `.env` | Your local values. |
 | `failOn` | `["undocumented"]` | Buckets that make `check` exit non-zero. |
@@ -186,6 +187,8 @@ Out of the box, env-doctor finds:
 - `process.env['NAME']` / `["NAME"]` / `` [`NAME`] ``
 - `import.meta.env.NAME` (Vite-style)
 - `import.meta.env['NAME']`
+- destructuring: `const { NAME, OTHER: alias, WITH_DEFAULT = '…' } = process.env`
+  (also `import.meta.env`) — toggle with `detectDestructuring`
 
 Add `patterns` for other languages or access styles — for example, Python's
 `os.environ['NAME']`. Custom patterns are **added** to the defaults unless you
@@ -197,9 +200,9 @@ Detection is text/regex-based, so it's fast and language-agnostic — but it has
 the trade-offs you'd expect:
 
 - References inside **comments or strings** are still matched.
-- **Destructuring** (`const { API_KEY } = process.env`) is not detected yet
-  (see [roadmap](#roadmap)).
 - Dynamic access (`process.env[someVariable]`) can't be resolved statically.
+- Destructuring is matched with a regex, so deeply nested or unusual forms may
+  be missed; disable it with `"detectDestructuring": false`.
 
 Use `ignore` to silence known false positives.
 
@@ -253,7 +256,6 @@ yourself.
 
 ## Roadmap
 
-- [ ] Detect `const { FOO } = process.env` destructuring.
 - [ ] First-class Python detection (`os.environ`, `os.getenv`).
 - [ ] Detect variables in `docker-compose.yml` / Compose `environment:` blocks.
 - [ ] `--verbose` mode showing which files reference each variable (names + paths only).

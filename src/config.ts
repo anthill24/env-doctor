@@ -19,6 +19,7 @@ export const DEFAULT_CONFIG: EnvDoctorConfig = {
   ignore: [],
   patterns: [],
   useDefaultPatterns: true,
+  detectDestructuring: true,
   exampleFile: '.env.example',
   localFile: '.env',
   failOn: ['undocumented'],
@@ -82,6 +83,9 @@ export function mergeConfig(input: unknown, source = '<config>'): EnvDoctorConfi
   if (obj.patterns !== undefined) cfg.patterns = asStringArray(obj.patterns, 'patterns', source);
   if (obj.useDefaultPatterns !== undefined) {
     cfg.useDefaultPatterns = asBoolean(obj.useDefaultPatterns, 'useDefaultPatterns', source);
+  }
+  if (obj.detectDestructuring !== undefined) {
+    cfg.detectDestructuring = asBoolean(obj.detectDestructuring, 'detectDestructuring', source);
   }
   if (obj.exampleFile !== undefined) cfg.exampleFile = asString(obj.exampleFile, 'exampleFile', source);
   if (obj.localFile !== undefined) cfg.localFile = asString(obj.localFile, 'localFile', source);

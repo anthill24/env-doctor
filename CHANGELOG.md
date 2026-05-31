@@ -22,6 +22,9 @@ Initial release.
   / `--force`.
 - Default detection for `process.env.X`, `process.env['X']`,
   `import.meta.env.X`, and bracket variants. Custom regex patterns via config.
+- Destructuring detection for `const { X } = process.env` / `import.meta.env`
+  (renames, defaults and rest elements handled). Toggle with
+  `detectDestructuring`.
 - `.envdoctorrc.json` configuration (source globs, excludes, ignored names,
   custom patterns, example/local file names, fail-on buckets, placeholder).
 - GitHub Action (`action.yml`) that writes a names-only summary to
