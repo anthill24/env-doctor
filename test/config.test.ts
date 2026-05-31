@@ -28,6 +28,12 @@ describe('mergeConfig', () => {
   it('rejects wrong types', () => {
     expect(() => mergeConfig({ source: 'not-an-array' })).toThrow(/must be an array of strings/);
     expect(() => mergeConfig({ useDefaultPatterns: 'yes' })).toThrow(/must be a boolean/);
+    expect(() => mergeConfig({ detectDestructuring: 'yes' })).toThrow(/must be a boolean/);
+  });
+
+  it('defaults detectDestructuring to true and allows disabling it', () => {
+    expect(DEFAULT_CONFIG.detectDestructuring).toBe(true);
+    expect(mergeConfig({ detectDestructuring: false }).detectDestructuring).toBe(false);
   });
 
   it('rejects invalid failOn buckets', () => {

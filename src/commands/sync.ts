@@ -38,6 +38,7 @@ export async function runSync(options: SyncOptions): Promise<SyncResult> {
     source: config.source,
     exclude: config.exclude,
     patterns,
+    detectDestructuring: config.detectDestructuring,
   });
 
   const example = await readEnvKeys(options.cwd, config.exampleFile);

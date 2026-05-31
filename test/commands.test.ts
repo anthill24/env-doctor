@@ -110,6 +110,19 @@ describe('write commands (temp dir)', () => {
   });
 });
 
+describe('destructuring detection (end to end)', () => {
+  it('check reports destructured vars as undocumented', async () => {
+    const result = await runCheck({ cwd: fixture('project-destructuring') });
+    expect(result.analysis.usedButUndocumented).toEqual([
+      'AWS_REGION',
+      'DB_HOST',
+      'DB_NAME',
+      'DB_PORT',
+      'VITE_PUBLIC_URL',
+    ]);
+  });
+});
+
 describe('init on a project with custom config', () => {
   let dir: string;
 

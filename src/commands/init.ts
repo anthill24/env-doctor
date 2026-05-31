@@ -46,6 +46,7 @@ export async function runInit(options: InitOptions): Promise<InitResult> {
     source: config.source,
     exclude: config.exclude,
     patterns,
+    detectDestructuring: config.detectDestructuring,
   });
 
   const vars = [...new Set(refs.filter((name) => !ignore.has(name)))].sort((a, b) =>

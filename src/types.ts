@@ -13,6 +13,8 @@ export interface EnvDoctorConfig {
   patterns: string[];
   /** Include the built-in JS/TS reference patterns in addition to `patterns`. */
   useDefaultPatterns: boolean;
+  /** Detect destructuring of process.env, e.g. `const { NAME } = ...` (JS/TS). */
+  detectDestructuring: boolean;
   /** File that documents the variable contract (the "example"). */
   exampleFile: string;
   /** File that holds the developer's local values. */

@@ -39,6 +39,43 @@ export function scanContent(content: string, patterns: readonly RegExp[]): strin
   return found;
 }
 
+// Matches object-destructuring from process.env / import.meta.env, including an
+// optional TypeScript type annotation. Illustrative forms (source keys on the
+// right of the arrow) — written without the trailing assignment so this comment
+// is not itself matched when env-doctor scans its own source:
+//   { A, B: localB, C = '...', ...rest }  ->  A, B, C
+//   { A }: Record<string, string>         ->  A
+const DESTRUCTURE_RE =
+  /\{([^{}]*)\}\s*(?::[^={}]+)?=\s*(?:process\.env|import\.meta\.env)\b/g;
+
+/**
+ * Find variable names introduced by destructuring `process.env` /
+ * `import.meta.env`. Renames (`A: local`) yield the source key; defaults
+ * (`A = '…'`) yield the key; rest elements (`...rest`) are skipped.
+ */
+export function scanDestructuring(content: string): string[] {
+  const found: string[] = [];
+  const re = new RegExp(DESTRUCTURE_RE.source, 'g');
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(content)) !== null) {
+    for (const rawPart of match[1].split(',')) {
+      const part = rawPart.trim();
+      if (!part || part.startsWith('...')) {
+        continue;
+      }
+      // The source key is the token before any rename (`:`) or default (`=`).
+      const name = part.split(/[:=]/, 1)[0].trim();
+      if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+        found.push(name);
+      }
+    }
+    if (match.index === re.lastIndex) {
+      re.lastIndex += 1;
+    }
+  }
+  return found;
+}
+
 export interface ScanResult {
   /** Unique variable names referenced anywhere in the scanned sources. */
   refs: string[];
@@ -52,6 +89,7 @@ export async function scanSources(options: {
   source: string[];
   exclude: string[];
   patterns: readonly RegExp[];
+  detectDestructuring?: boolean;
 }): Promise<ScanResult> {
   const files = await glob(options.source, {
     cwd: options.cwd,
@@ -74,6 +112,11 @@ export async function scanSources(options: {
     filesScanned += 1;
     for (const name of scanContent(content, options.patterns)) {
       refs.add(name);
+    }
+    if (options.detectDestructuring) {
+      for (const name of scanDestructuring(content)) {
+        refs.add(name);
+      }
     }
   }
 
