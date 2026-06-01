@@ -56,6 +56,11 @@ describe('scanDestructuring', () => {
     expect(scanDestructuring(src)).toEqual(['A']);
   });
 
+  it('captures destructuring before an inline object type annotation', () => {
+    const src = 'const { FOO, BAR }: { FOO: string; BAR: string } = process.env;';
+    expect(scanDestructuring(src).sort()).toEqual(['BAR', 'FOO']);
+  });
+
   it('ignores unrelated destructuring', () => {
     expect(scanDestructuring('const { a, b } = someObject;')).toEqual([]);
   });

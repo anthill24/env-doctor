@@ -138,17 +138,28 @@ export function parseFailOn(value: string): FailBucket[] {
     .map((p) => p.trim())
     .filter((p) => p.length > 0);
 
-  if (parts.length === 0 || parts.includes('none')) {
+  if (parts.length === 0) {
     return [];
   }
 
   for (const part of parts) {
-    if (!VALID_BUCKETS.includes(part as FailBucket)) {
+    if (part !== 'none' && !VALID_BUCKETS.includes(part as FailBucket)) {
       throw new Error(
         `Invalid --fail-on value "${part}". ` +
           `Valid values: ${VALID_BUCKETS.join(', ')}, none.`,
       );
     }
   }
+
+  if (parts.includes('none')) {
+    if (parts.length > 1) {
+      throw new Error(
+        'Invalid --fail-on value "none". ' +
+          '"none" cannot be combined with failing buckets.',
+      );
+    }
+    return [];
+  }
+
   return parts as FailBucket[];
 }

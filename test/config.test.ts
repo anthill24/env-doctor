@@ -66,6 +66,11 @@ describe('parseFailOn', () => {
   it('rejects unknown buckets', () => {
     expect(() => parseFailOn('bogus')).toThrow(/Invalid --fail-on/);
   });
+
+  it('rejects "none" combined with failing buckets', () => {
+    expect(() => parseFailOn('none,undocumented')).toThrow(/cannot be combined/);
+    expect(() => parseFailOn('unused,none')).toThrow(/cannot be combined/);
+  });
 });
 
 describe('loadConfig', () => {

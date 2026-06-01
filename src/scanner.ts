@@ -40,13 +40,16 @@ export function scanContent(content: string, patterns: readonly RegExp[]): strin
 }
 
 // Matches object-destructuring from process.env / import.meta.env, including an
-// optional TypeScript type annotation. Illustrative forms (source keys on the
-// right of the arrow) — written without the trailing assignment so this comment
-// is not itself matched when env-doctor scans its own source:
+// optional TypeScript type annotation. The annotation branch accepts object
+// type literals so the captured group stays on the destructuring pattern, not
+// the inline type. Illustrative forms (source keys on the right of the arrow)
+// — written without the trailing assignment so this comment is not itself
+// matched when env-doctor scans its own source:
 //   { A, B: localB, C = '...', ...rest }  ->  A, B, C
 //   { A }: Record<string, string>         ->  A
+//   { A, B }: { A: string; B: string }    ->  A, B
 const DESTRUCTURE_RE =
-  /\{([^{}]*)\}\s*(?::[^={}]+)?=\s*(?:process\.env|import\.meta\.env)\b/g;
+  /\{([^{}]*)\}\s*(?::\s*(?:\{(?:[^{}]|\{[^{}]*\})*\}|[^={}])*)?=\s*(?:process\.env|import\.meta\.env)\b/g;
 
 /**
  * Find variable names introduced by destructuring `process.env` /

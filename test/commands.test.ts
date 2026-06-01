@@ -72,6 +72,16 @@ describe('write commands (temp dir)', () => {
     expect(example).not.toMatch(/PORT=.+/);
   });
 
+  it('sync --write starts additions on a new line without reading example values', async () => {
+    await writeFile(path.join(dir, '.env.example'), 'API_KEY=actual-canary-value', 'utf8');
+
+    const result = await runSync({ cwd: dir, write: true });
+    expect(result.written).toBe(true);
+
+    const example = await readFile(path.join(dir, '.env.example'), 'utf8');
+    expect(example).toContain('API_KEY=actual-canary-value\nBRACKET_VAR=');
+  });
+
   it('sync --write with a placeholder uses that literal, never a real value', async () => {
     const result = await runSync({ cwd: dir, write: true, placeholder: 'changeme' });
     expect(result.written).toBe(true);

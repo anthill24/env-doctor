@@ -1,4 +1,4 @@
-import { appendFile, readFile } from 'node:fs/promises';
+import { appendFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { analyze } from '../analyze.js';
 import { loadConfig, resolvePatterns } from '../config.js';
@@ -81,8 +81,8 @@ async function appendProposedLines(
 ): Promise<void> {
   let prefix = '';
   if (exists) {
-    const current = await readFile(fullPath, 'utf8').catch(() => '');
-    if (current.length > 0 && !current.endsWith('\n')) {
+    const current = await stat(fullPath).catch(() => undefined);
+    if (current && current.size > 0) {
       prefix = '\n';
     }
   }

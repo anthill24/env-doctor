@@ -10,6 +10,8 @@ import type { OutputFormat } from './report.js';
 import { VERSION } from './version.js';
 
 const BOOLEAN_FLAGS = new Set(['write', 'force', 'help', 'version']);
+const VALUE_FLAGS = new Set(['cwd', 'config', 'format', 'fail-on', 'placeholder']);
+const EMPTY_VALUE_ALLOWED_FLAGS = new Set(['placeholder']);
 
 interface ParsedArgs {
   positionals: string[];
@@ -33,11 +35,19 @@ function parseArgv(argv: string[]): ParsedArgs {
       const body = arg.slice(2);
       const eq = body.indexOf('=');
       if (eq !== -1) {
-        flags[body.slice(0, eq)] = body.slice(eq + 1);
+        const name = body.slice(0, eq);
+        flags[name] = normalizeValueFlag(name, body.slice(eq + 1));
       } else if (body.startsWith('no-')) {
         flags[body.slice(3)] = false;
       } else if (BOOLEAN_FLAGS.has(body)) {
         flags[body] = true;
+      } else if (VALUE_FLAGS.has(body)) {
+        const next = argv[i + 1];
+        if (next === undefined || next.startsWith('-')) {
+          throw new Error(`Missing value for --${body}.`);
+        }
+        flags[body] = next;
+        i += 1;
       } else {
         const next = argv[i + 1];
         if (next === undefined || next.startsWith('-')) {
@@ -53,6 +63,13 @@ function parseArgv(argv: string[]): ParsedArgs {
   }
 
   return { positionals, flags };
+}
+
+function normalizeValueFlag(name: string, value: string): string {
+  if (VALUE_FLAGS.has(name) && value.length === 0 && !EMPTY_VALUE_ALLOWED_FLAGS.has(name)) {
+    throw new Error(`Missing value for --${name}.`);
+  }
+  return value;
 }
 
 const HELP = `env-doctor — keep your .env.example honest
@@ -85,8 +102,10 @@ function parseFormat(value: string | boolean | undefined): OutputFormat {
   throw new Error(`Invalid --format value "${String(value)}". Use text, json, or markdown.`);
 }
 
-function flagString(value: string | boolean | undefined): string | undefined {
-  return typeof value === 'string' ? value : undefined;
+function flagString(name: string, value: string | boolean | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === 'string') return normalizeValueFlag(name, value);
+  throw new Error(`Missing value for --${name}.`);
 }
 
 function writeStepSummary(markdown: string): void {
@@ -118,9 +137,10 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
 
-  const cwd = flagString(flags.cwd) ? path.resolve(String(flags.cwd)) : process.cwd();
-  const configPath = flagString(flags.config);
-  const placeholder = flagString(flags.placeholder);
+  const cwdFlag = flagString('cwd', flags.cwd);
+  const cwd = cwdFlag !== undefined ? path.resolve(cwdFlag) : process.cwd();
+  const configPath = flagString('config', flags.config);
+  const placeholder = flagString('placeholder', flags.placeholder);
 
   switch (command) {
     case 'check': {

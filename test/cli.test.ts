@@ -65,4 +65,10 @@ describe.skipIf(!built)('built CLI (dist/cli.js)', () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('never prints values');
   });
+
+  it('rejects missing values for string flags', () => {
+    const result = run(['check', '--cwd', '--fail-on', 'undocumented']);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Missing value for --cwd.');
+  });
 });
